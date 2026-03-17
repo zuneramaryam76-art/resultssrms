@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student Result Management System - Manage student results, grades, and academic performance tracking with ease.">
+  <title>SRMS - Student Result Management System</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===== LOGIN PAGE ===== -->
+  <div class="login-container" id="loginPage">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon">🎓</div>
+        <h1>SRMS</h1>
+        <p>Student Result Management System</p>
+      </div>
+      <div class="login-error" id="loginError"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" class="form-control" placeholder="Enter your username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;" id="loginBtn">
+          Sign In
+        </button>
+      </form>
+      <p style="text-align:center; margin-top:20px; font-size:12px; color:var(--text-muted);">
+        Default: admin / admin123
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== APP CONTAINER ===== -->
+  <div class="app-container" id="appContainer">
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="brand-icon">🎓</div>
+          <div>
+            <h2>SRMS</h2>
+            <small>Result Management</small>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main</div>
+        <div class="nav-item active" data-page="dashboard" id="navDashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-page="students" id="navStudents">
+          <span class="nav-icon">👨‍🎓</span> Students
+        </div>
+        <div class="nav-item" data-page="subjects" id="navSubjects">
+          <span class="nav-icon">📚</span> Subjects
+        </div>
+        <div class="nav-item" data-page="results" id="navResults">
+          <span class="nav-icon">📝</span> Results
+        </div>
+
+        <div class="nav-label">Public</div>
+        <div class="nav-item" data-page="lookup" id="navLookup">
+          <span class="nav-icon">🔍</span> Student Lookup
+        </div>
+
+        <div class="nav-label" id="adminNavLabel" style="display:none">Administration</div>
+        <div class="nav-item" data-page="users" id="navUsers" style="display:none">
+          <span class="nav-icon">👤</span> User Management
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role" id="userRole">admin</div>
+          </div>
+          <button class="btn-logout" id="logoutBtn" title="Logout">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" id="menuToggle">☰</button>
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="header-right">
+          <span class="header-badge">
+            <span class="dot"></span>
+            Online
+          </span>
+        </div>
+      </header>
+
+      <div class="content-area">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div class="page-section active" id="pageDashboard">
+          <div class="stats-grid" id="statsGrid">
+            <!-- Filled by JS -->
+          </div>
+          <div class="dashboard-grid">
+            <div class="glass-card">
+              <div class="card-header">
+                <h3>🏆 Top Students</h3>
+              </div>
+              <div class="top-students-list" id="topStudentsList">
+                <div class="empty-state"><p>No data yet</p></div>
+              </div>
+            </div>
+            <div class="glass-card">
+              <div class="card-header">
+                <h3>📈 Grade Distribution</h3>
+              </div>
+              <div id="gradeDistribution">
+                <div class="empty-state"><p>No data yet</p></div>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>🕐 Recent Results</h3>
+            </div>
+            <div class="table-container">
+              <table id="recentResultsTable">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Roll No</th>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                    <th>Grade</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentResultsBody">
+                  <tr><td colspan="6" class="empty-state">No results yet</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STUDENTS PAGE ===== -->
+        <div class="page-section" id="pageStudents">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>👨‍🎓 Student Management</h3>
+              <button class="btn btn-primary" id="addStudentBtn">+ Add Student</button>
+            </div>
+            <div class="filter-bar">
+              <input type="text" class="form-control search-input" id="studentSearch" placeholder="Search by name or roll number...">
+              <select class="form-control" id="studentClassFilter">
+                <option value="">All Classes</option>
+              </select>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Semester</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                  <tr><td colspan="7" class="empty-state">No students found</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SUBJECTS PAGE ===== -->
+        <div class="page-section" id="pageSubjects">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>📚 Subject Management</h3>
+              <button class="btn btn-primary" id="addSubjectBtn">+ Add Subject</button>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Subject Name</th>
+                    <th>Class</th>
+                    <th>Semester</th>
+                    <th>Max Marks</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="subjectsTableBody">
+                  <tr><td colspan="6" class="empty-state">No subjects found</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== RESULTS PAGE ===== -->
+        <div class="page-section" id="pageResults">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>📝 Result Management</h3>
+              <button class="btn btn-success" id="addResultBtn">+ Add Result</button>
+            </div>
+            <div class="filter-bar">
+              <select class="form-control" id="resultClassFilter">
+                <option value="">All Classes</option>
+              </select>
+              <select class="form-control" id="resultSemesterFilter">
+                <option value="">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+              <select class="form-control" id="resultExamFilter">
+                <option value="">All Exams</option>
+                <option value="midterm">Midterm</option>
+                <option value="final">Final</option>
+                <option value="internal">Internal</option>
+              </select>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                    <th>Max</th>
+                    <th>%</th>
+                    <th>Grade</th>
+                    <th>Exam</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                  <tr><td colspan="9" class="empty-state">No results found</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STUDENT LOOKUP PAGE ===== -->
+        <div class="page-section" id="pageLookup">
+          <div class="lookup-container">
+            <div class="lookup-header">
+              <h2>🔍 Student Result Lookup</h2>
+              <p>Enter your roll number to view your academic results</p>
+            </div>
+            <div class="lookup-form">
+              <input type="text" class="form-control" id="lookupRollNo" placeholder="Enter Roll Number (e.g., CS2024001)">
+              <button class="btn btn-primary" id="lookupBtn">Search</button>
+            </div>
+            <div id="lookupResults" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- ===== USER MANAGEMENT PAGE ===== -->
+        <div class="page-section" id="pageUsers">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>👤 User Management</h3>
+              <button class="btn btn-primary" id="addUserBtn">+ Add User</button>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="5" class="empty-state">No users found</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== MODAL CONTAINER ===== -->
+  <div id="modalContainer"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
